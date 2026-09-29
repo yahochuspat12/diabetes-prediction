@@ -1,0 +1,10 @@
+numpy
+pandas
+matplotlib
+scikit-learn
+imbalanced-learn
+catboost
+fastapi
+uvicorn
+pydantic
+dill

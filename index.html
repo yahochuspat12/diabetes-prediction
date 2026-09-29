@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Диагностика диабета</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+
+        <header class="header">
+            <div class="header-inner">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                    <div class="logo-text">
+                        <h1>Диагностика диабета</h1>
+                        <p>Прогнозирование риска на основе ML</p>
+                    </div>
+                </div>
+                <div class="server-status">
+                    <span class="status-indicator status-offline" id="statusIndicator"></span>
+                    <span id="serverStatusText">Проверка...</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main" id="main">
+            <section class="form-section">
+                <div class="toolbar">
+                    <button class="btn btn-ghost" onclick="getModelInfo()">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="16" x2="12" y2="12"/>
+                            <line x1="12" y1="8" x2="12.01" y2="8"/>
+                        </svg>
+                        Информация о модели
+                    </button>
+                    <label class="btn btn-ghost file-label">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        Загрузить из JSON
+                        <input type="file" id="jsonFile" class="file-input"
+                               accept=".json" onchange="loadFromJSON()">
+                    </label>
+                    <button class="btn btn-ghost" onclick="clearForm()">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            <line x1="10" y1="11" x2="10" y2="17"/>
+                            <line x1="14" y1="11" x2="14" y2="17"/>
+                        </svg>
+                        Очистить
+                    </button>
+                </div>
+
+                <h2 class="section-title">Данные пациента</h2>
+
+                <div id="dropZone" class="drop-zone">
+                    <div class="drop-hint">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <span>Отпустите JSON-файл для загрузки</span>
+                    </div>
+
+                    <form id="patientForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="pregnancies">Количество беременностей</label>
+                            <input type="number" id="pregnancies" min="0" max="17" placeholder="0–17" required>
+                            <div class="validation-message" id="pregnancies-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="glucose">Уровень глюкозы (mg/dL)</label>
+                            <input type="number" id="glucose" min="20" max="300" placeholder="20–300" required>
+                            <div class="validation-message" id="glucose-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="bloodPressure">Артериальное давление (mm Hg)</label>
+                            <input type="number" id="bloodPressure" min="30" max="150" placeholder="30–150" required>
+                            <div class="validation-message" id="bloodPressure-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="skinThickness">Толщина кожи (mm)</label>
+                            <input type="number" id="skinThickness" min="7" max="99" placeholder="7–99" required>
+                            <div class="validation-message" id="skinThickness-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="insulin">Уровень инсулина (mu U/ml)</label>
+                            <input type="number" id="insulin" min="0" max="846" placeholder="0–846" required>
+                            <div class="validation-message" id="insulin-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="bmi">Индекс массы тела (BMI)</label>
+                            <input type="number" id="bmi" min="10" max="67.1" step="0.1" placeholder="10–67.1" required>
+                            <div class="validation-message" id="bmi-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="diabetesPedigree">Наследственность диабета</label>
+                            <input type="number" id="diabetesPedigree"
+                                   min="0.078" max="2.42" step="0.001" placeholder="0.078–2.420" required>
+                            <div class="validation-message" id="diabetesPedigree-error"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Возраст</label>
+                            <input type="number" id="age" min="21" max="81" placeholder="21–81" required>
+                            <div class="validation-message" id="age-error"></div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary submit-btn"
+                            onclick="predictDiabetes()" id="predictBtn" disabled>
+                        Анализировать данные
+                    </button>
+                </div>
+            </section>
+
+            <aside class="panel" id="panel">
+                <div class="panel-header">
+                    <h2 id="panelTitle">Результат</h2>
+                    <button class="panel-close" onclick="closePanel()" title="Закрыть">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="panel-body" id="panelBody"></div>
+            </aside>
+        </main>
+
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <p>Анализируем данные...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
